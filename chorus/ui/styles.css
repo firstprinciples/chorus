@@ -2501,6 +2501,51 @@ body[data-theme="light"] .provider-openai {
   field-sizing: content;
 }
 
+/* Mention suggestions: the participants whose handle matches what the person
+   is typing after an @. The list sits just above the message box, over the
+   chat sheet (15) when that is raised. */
+.mention-suggestions {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  z-index: 16;
+  min-width: 260px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0 0 6px;
+  padding: 4px;
+  list-style: none;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+}
+
+.mention-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mention-suggestion:hover,
+.mention-suggestion[aria-selected="true"] {
+  background: var(--accent-soft);
+}
+
+.mention-suggestion-note {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+}
+
 .composer-actions {
   display: flex;
   align-items: center;
