@@ -147,6 +147,12 @@ From a terminal in your repository, press **Command–Option–Shift–C** or ru
 herdr-app do mod.open --name chorus-launcher
 ```
 
+For caller-supplied role rosters, `chorus team inspect --space <space>` and
+`chorus team launch --space <space> --choices <file|->` also work from a terminal.
+The command accepts explicit program/model choices; Herdr's catalog remains in
+the dialog. See [terminal role selection](skills/herdr/chorus-launcher/README.md#choose-roles-from-a-terminal)
+for the JSON format, defaults, refusals and retries.
+
 The launcher shows one row per installed agent app (Claude Code, Codex, Cursor,
 Antigravity). For each row, choose the model, the thinking level, and whether to
 turn on YOLO mode (the client's own skip-permissions flag). It offers only the

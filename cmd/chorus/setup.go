@@ -220,7 +220,7 @@ func setupHerdrLauncher(homeDir string, out io.Writer) (string, error) {
 	const source = "herdr/chorus-launcher"
 	modDir := filepath.Join(herdrHome, "mods", "chorus-launcher")
 	// The overlay manifest must exist before Herdr can load the new UI script.
-	for _, name := range []string{"mod.json", "launch.py", "main.js"} {
+	for _, name := range []string{"mod.json", "launch.py", "team_cli.py", "main.js"} {
 		content, err := skills.HerdrLauncher.ReadFile(source + "/" + name)
 		if err != nil {
 			return "", fmt.Errorf("read bundled Herdr launcher %s: %w", name, err)

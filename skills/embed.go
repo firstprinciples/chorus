@@ -14,4 +14,5 @@ var ChorusSkillMD []byte
 //
 //go:embed herdr/chorus-launcher/mod.json herdr/chorus-launcher/main.js
 //go:embed herdr/chorus-launcher/launch.py
+//go:embed herdr/chorus-launcher/team_cli.py
 var HerdrLauncher embed.FS

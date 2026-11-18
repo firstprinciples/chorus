@@ -218,7 +218,7 @@ func TestSetupInstallsHerdrLauncher(t *testing.T) {
 					return
 				}
 				assert.Equal(t, mod, installedDir)
-				for _, name := range []string{"mod.json", "main.js", "launch.py"} {
+				for _, name := range []string{"mod.json", "main.js", "launch.py", "team_cli.py"} {
 					target := filepath.Join(mod, name)
 					want, err := skills.HerdrLauncher.ReadFile("herdr/chorus-launcher/" + name)
 					require.NoError(t, err)
