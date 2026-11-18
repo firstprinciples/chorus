@@ -97,7 +97,7 @@ func main() {
 }
 
 // dispatch routes CLI subcommands ("up", "down", "status", "ui", "setup", "watch",
-// "update", "version", "serve") or defaults to running the foreground server
+// "team", "update", "version", "serve") or defaults to running the foreground server
 // when invoked with server flags or no arguments.
 func dispatch(args []string, out io.Writer) error {
 	if len(args) > 0 {
@@ -119,6 +119,8 @@ func dispatch(args []string, out io.Writer) error {
 				return runSetup(args[1:], out)
 			case "watch":
 				return runWatch(args[1:], out)
+			case "team":
+				return runTeam(args[1:], os.Stdin, out)
 			case "update":
 				exe, err := os.Executable()
 				if err != nil {
@@ -130,7 +132,7 @@ func dispatch(args []string, out io.Writer) error {
 			case "who", "join", "leave", "send", "read":
 				return fmt.Errorf("%q is a Chorus MCP tool, not a CLI subcommand; call the %q Chorus MCP tool directly (use 'chorus watch <agent>' only for background shell listening)", args[0], args[0])
 			default:
-				return fmt.Errorf("unknown subcommand %q (expected: up, down, status, ui, setup, watch, update, version, serve)", args[0])
+				return fmt.Errorf("unknown subcommand %q (expected: up, down, status, ui, setup, watch, team, update, version, serve)", args[0])
 			}
 		}
 	}
@@ -316,7 +318,7 @@ func parseServerFlags(args []string) (serverConfig, error) {
 	}
 	fs := flag.NewFlagSet("chorus", flag.ContinueOnError)
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), "Usage: chorus [up|down|status|ui|setup|watch|update|version|serve] [flags]\n\nFlags:\n  -version, --version, -v\n    \tPrint Chorus version and exit\n")
+		fmt.Fprintf(fs.Output(), "Usage: chorus [up|down|status|ui|setup|watch|team|update|version|serve] [flags]\n\nFlags:\n  -version, --version, -v\n    \tPrint Chorus version and exit\n")
 		fs.PrintDefaults()
 	}
 	fs.StringVar(&cfg.addr, "addr", defaultListenAddr, "HTTP listen address")

@@ -964,7 +964,8 @@ def main() -> int:
     """Run the accepted launch independently of the dialog, with a kernel lock."""
     try:
         app_home = Path(sys.argv[1]).resolve(strict=True)
-        action, request = sys.argv[2], json.loads(sys.argv[3])
+        action = sys.argv[2]
+        request = json.load(sys.stdin) if sys.argv[3] == "-" else json.loads(sys.argv[3])
         os.environ.update(CI="true", HERDR_APP_HOME=str(app_home))
         bins = {name: shutil.which(name) for name in ("herdr-app", "herdr-core")}
         if not all(bins.values()):
@@ -990,13 +991,17 @@ def main() -> int:
             return json.loads(output) if output.strip() else {}
 
         app, core = lambda args: call("herdr-app", args), lambda args: call("herdr-core", args)
+        if action == "team-inspect":
+            import team_cli
+            print(json.dumps(team_cli.inspect(request, app, core, app_home)))
+            return 0
         if action == "inspect":
             print(json.dumps(inspect_team(request, app, core, app_home)))
             return 0
         if action == "models":
             print(json.dumps(discover(request, lambda argv: execute(split_argv(argv, os.getcwd())))))
             return 0
-        if action != "launch":
+        if action not in ("launch", "team-launch"):
             raise ValueError("Unknown launcher action. Reopen Start Chorus.")
 
         # flock is released by the OS even if this process or Herdr exits.
@@ -1005,11 +1010,18 @@ def main() -> int:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError:
                 raise RuntimeError("A Chorus team is already opening. Wait for it to finish, then reopen the launcher.") from None
-            result = launch_team(request, app, core, app_home)
+            if action == "team-launch":
+                import team_cli
+                result = team_cli.start(request, app, core, app_home, execute)
+            else:
+                result = launch_team(request, app, core, app_home)
         print(json.dumps(result))
         return 0
     except Exception as error:
-        print(f"{error}\nExisting panes remain available; reopen Start Chorus to continue.", file=sys.stderr)
+        recovery = "Existing panes remain available; reopen Start Chorus to continue."
+        if len(sys.argv) > 2 and sys.argv[2].startswith("team-"):
+            recovery = "Inspect the team and retry with chorus team; existing panes remain available."
+        print(f"{error}\n{recovery}", file=sys.stderr)
         return 1
 
 

@@ -96,6 +96,67 @@ kernel lock serializes launches and is released if the helper exits.
 
 ## Space rosters
 
+### Choose roles from a terminal
+
+For a space with a caller-supplied roster, Chorus 0.12.0 also supports inspection
+and launch without operating the dialog:
+
+```sh
+chorus team inspect --space sp1
+chorus team launch --space sp1 --choices choices.json
+```
+
+Use the actual space ID returned by your project. Inspection prints JSON with
+the project root, swarm, and ordered roles: each role's title, handle, running
+state, client, model, thinking level, and permission setting. Unknown recorded
+settings are null. Inspection never returns connection credentials.
+
+The choices file is a JSON object keyed by the roster's role names:
+
+```json
+{
+  "guide": {
+    "client": "codex",
+    "program": "codex",
+    "model": "gpt-6.1-sol",
+    "thinking": null,
+    "yolo": false
+  }
+}
+```
+
+All five choice fields are required. `client` identifies the launcher family;
+`program` is one literal executable, absolute path, or shell function name.
+For example, a Claude Code wrapper can use `client: "claude"` with
+`program: "my-claude"`. Shell snippets and program arguments are not accepted.
+The client family controls model, thinking, permission, and MCP flags; it is
+never inferred from a wrapper's filename. Codex runs with `--no-daemon`, keeping
+each role's identity separate. Roles with connections currently support the
+Claude Code and Codex families, just as in the dialog.
+
+The command has no agent catalog and does not read or write Herdr's saved
+preferences. Name your program and model explicitly, or use the dialog for
+Herdr's catalog and saved choices. Null model/thinking select the client's
+defaults; an exact custom model ID is supported when the program advertises
+`--model`. The program checks model access at startup. Before opening any pane,
+Chorus checks the named programs and requested options through the launch
+shell. A missing program or unsupported option fails with a reason on stderr.
+
+`--choices -` reads the same JSON from standard input. Every role that is not
+running needs an explicit choice; omit running roles to reuse them, or repeat
+their recorded client/model/thinking/permission settings. A running conversation
+is never restarted or given new settings. Program names apply only to new
+panes. Success prints `{ "tab": "...", "created": 1, "reused": 0 }` and exits
+zero. On refusal, the command exits nonzero without success JSON. If a later
+pane fails, completed panes remain available: inspect and retry to open the
+remaining roles without duplicates. The command uses the same locking, MCP
+configuration, labels, and pane placement as the dialog, and does not close
+unrelated dialogs.
+
+The installed launcher must match the command's release. If it is missing or
+stale, run `chorus setup -global` before retrying. That explicit setup owns
+installation; a team command never changes integration files automatically.
+
 A caller such as Surla can supply a role roster for a Herdr space by writing
 `<herdrHome>/data/chorus-launcher/rosters/<space>.json`, where `<space>` is the
 space ID from `herdr-app ls`:
