@@ -123,12 +123,12 @@
 
         <!-- Participants to mention, listed above the message box while the person types @ and part of a handle -->
         <ul class="mention-suggestions scroller" id="mention-suggestions" role="listbox" aria-label="Participants to mention" hidden></ul>
+        <span class="visually-hidden" id="mention-status" role="status" aria-live="polite" aria-atomic="true"></span>
 
         <textarea
           id="send-text"
           class="composer-textarea"
           aria-controls="chat-sheet"
-          aria-autocomplete="list"
           aria-expanded="false"
           aria-keyshortcuts="ArrowUp Escape"
           rows="1"
